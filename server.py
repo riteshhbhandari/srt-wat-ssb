@@ -120,6 +120,18 @@ def call_gemini() -> dict:
     return _gemini_request(PROMPT)
 
 
+def generate_words() -> dict:
+    """Generate a fresh set of 60 WAT words via Gemini and validate the shape."""
+    data = _gemini_request(_psychology_words_prompt())
+    words = data.get("words") if isinstance(data, dict) else None
+    if (not isinstance(words, list) or len(words) != 60
+            or not all(isinstance(w, str) and w.strip() for w in words)):
+        raise RuntimeError(
+            "The generated word set was incomplete. Please generate a new set."
+        )
+    return {"words": words}
+
+
 def _js_round_half_up(x: float) -> int:
     """Math.round() semantics (0.5 always rounds up), unlike Python's banker's rounding."""
     return int(x + 0.5)
@@ -453,10 +465,10 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(404, {"error": "Not found"})
 
     def do_POST(self):
-        routes = {"/api/generate-srt", "/api/analyze-srt", "/api/word-pdf", "/api/report-pdf"}
+        routes = {"/api/generate-srt", "/api/generate-words", "/api/analyze-srt", "/api/word-pdf", "/api/report-pdf"}
         if self.path not in routes:
             return self._send(404, {"error": "Not found"})
-        if self.path == "/api/generate-srt" and not rate_limit(self.client_address[0]):
+        if self.path in ("/api/generate-srt", "/api/generate-words") and not rate_limit(self.client_address[0]):
             return self._send(429, {"error": "Too many requests. Try again in a minute."})
 
         try:
@@ -477,6 +489,8 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if self.path == "/api/generate-srt":
                 return self._send(200, call_gemini())
+            if self.path == "/api/generate-words":
+                return self._send(200, generate_words())
             if self.path == "/api/analyze-srt":
                 return self._send(200, analyze_srt(payload))
             if self.path == "/api/word-pdf":

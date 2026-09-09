@@ -5,11 +5,11 @@ import { testWords } from '../data/words';
  * /api/word-pdf, ported from the old pdfGenerator.ts). This client only asks
  * the backend to build it and downloads the resulting blob.
  */
-export async function downloadWordList() {
+export async function downloadWordList(words: string[] = testWords) {
   const res = await fetch('/api/word-pdf', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ words: testWords }),
+    body: JSON.stringify({ words }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => null);
