@@ -324,14 +324,17 @@ function Landing({ go }: { go: (s: Screen) => void }) {
             <h2>60-word timed response test</h2>
             <p>60 words · 15 seconds each</p>
             <strong>
-              Start Word Test <ChevronRight />
+              Start Word Association Test <ChevronRight />
             </strong>
           </button>
         </div>
-      </section>
-    </main>
-  );
-}
+        </section>
+        <footer>
+          <span className="eyebrow">A LIFE LIVED LESS ORDINARY</span>
+        </footer>
+      </main>
+    );
+  }
 function Intro({
   word,
   back,
