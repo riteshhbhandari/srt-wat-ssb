@@ -1,0 +1,28 @@
+# systemd service unit for the SSB Practice Python backend.
+#
+# Install:
+#   sudo cp ssb-backend.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable ssb-backend
+#   sudo systemctl start ssb-backend
+#
+# The GEMINI_API_KEY is injected via the Environment directive so it never
+# touches the filesystem on the server. Adjust WorkingDirectory/ExecStart
+# paths as needed.
+
+[Unit]
+Description=SSB Practice Backend (server.py)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/ssb-practice
+ExecStart=/usr/bin/python3 server.py
+Restart=always
+RestartSec=5
+Environment=GEMINI_API_KEY=YOUR_ACTUAL_KEY_HERE
+Environment=PORT=8787
+
+[Install]
+WantedBy=multi-user.target

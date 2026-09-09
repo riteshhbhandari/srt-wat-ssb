@@ -18,6 +18,54 @@ import { generateSRTQuestions } from "./services/srtGenerator";
 import { downloadWordList, downloadAnalysisReport } from "./services/pdfGenerator";
 import "./styles.css";
 
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(err: Error, info: React.ErrorInfo) {
+    console.error("React error boundary caught:", err, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <main
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: "Inter, sans-serif",
+            textAlign: "center",
+            padding: "2rem",
+          }}
+        >
+          <h1 style={{ fontSize: "24px", marginBottom: "0.5rem" }}>
+            Something went wrong
+          </h1>
+          <p style={{ color: "#60605b", marginBottom: "1.5rem" }}>
+            An unexpected error occurred. Please refresh the page to continue.
+          </p>
+          <button
+            className="darkbtn"
+            onClick={() => window.location.reload()}
+          >
+            Refresh
+          </button>
+        </main>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 type Screen =
   | "landing"
   | "srt-intro"
@@ -554,4 +602,8 @@ function AnalysisView({ data, back, questions, responses }: {
     </main>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>,
+);
