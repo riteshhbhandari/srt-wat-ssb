@@ -27,7 +27,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
-HOST = "127.0.0.1"
+HOST = "0.0.0"  # listen on all interfaces for containerized deployment
 PORT = int(os.environ.get("PORT", "8787"))
 RATE_LIMIT = 5                       # requests allowed per window
 RATE_WINDOW_MS = 60_000              # window size (matches server.mjs)
